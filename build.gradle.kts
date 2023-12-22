@@ -44,8 +44,8 @@ dependencies {
 	runtimeOnly("org.springframework.modulith:spring-modulith-events-kafka")
 
 	// TODO STAGE_MODULITH_OBSERVABILITY - Uncomment it
-//	runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
-//	runtimeOnly("org.springframework.modulith:spring-modulith-observability")
+	runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
+	runtimeOnly("org.springframework.modulith:spring-modulith-observability")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
