@@ -1,0 +1,2 @@
+org.springframework.modulith.core.ApplicationModuleDetectionStrategy=\
+  org.snowcamp.university.springmodulith.CustomApplicationModuleDetectionStrategy
