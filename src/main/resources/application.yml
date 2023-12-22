@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: "Chartreuse shop"
+
+  data:
+    mongodb:
+      uri: "mongodb://chartreuse-mongo-user:chartreuse-mongo-password@localhost:27017/chartreuse-db"
+
+  rabbitmq:
+    addresses: "localhost:5672"
+    virtual-host: "chartreuse-vhost"
+    ssl:
+      enabled: false
+      algorithm: "TLSv1.3"
+    username: chartreuse-rabbit-user
+    password: chartreuse-rabbit-password
+
+management:
+  endpoints:
+    enabled-by-default: true
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  defaults:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    mongo:
+      command:
+        enabled: false # disable springboot autoconfigured command listener; command are monitored by tracing
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1
+  opentelemetry:
+    resource-attributes:
+      environment: "local"
+      "service.name": ${spring.application.name}
+      "instrumentation.provider": "micrometer"
+  otlp:
+    metrics:
+      export:
+        enabled: true
+        url: "http://localhost:4318/v1/metrics"
+    tracing:
+      endpoint: "http://localhost:4318/v1/traces"
