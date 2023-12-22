@@ -31,11 +31,11 @@ dependencies {
 	implementation("io.swagger:swagger-annotations:1.6.12") // required for open-api generated code
 
 	// TODO STAGE_MODULITH - Uncomment it
-//	implementation("org.springframework.modulith:spring-modulith-starter-core")
-//	implementation("org.springframework.modulith:spring-modulith-starter-mongodb")
-//	implementation("org.springframework.modulith:spring-modulith-events-api")
-//	implementation("org.springframework.modulith:spring-modulith-core")
-//	testImplementation("org.springframework.modulith:spring-modulith-starter-test")
+	implementation("org.springframework.modulith:spring-modulith-starter-core")
+	implementation("org.springframework.modulith:spring-modulith-starter-mongodb")
+	implementation("org.springframework.modulith:spring-modulith-events-api")
+	implementation("org.springframework.modulith:spring-modulith-core")
+	testImplementation("org.springframework.modulith:spring-modulith-starter-test")
 
 	runtimeOnly("io.opentelemetry:opentelemetry-exporter-otlp")
 	runtimeOnly("io.micrometer:micrometer-registry-otlp")
