@@ -8,16 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Component
-public class PaymentHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentHandler.class);
+public class CompletePaymentHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CompletePaymentHandler.class);
     private final OrderManager orderManager;
 
-    public PaymentHandler(OrderManager orderManager) {
+    public CompletePaymentHandler(OrderManager orderManager) {
         this.orderManager = orderManager;
-    }
-
-    public void initPayment(String orderId) {
-        LOGGER.info("Init payment {}", orderId);
     }
 
     @Transactional
