@@ -2,7 +2,8 @@ package org.snowcamp.university.springmodulith.payment.domain;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.snowcamp.university.springmodulith.order.domain.OrderManager;
+import org.snowcamp.university.springmodulith.order.OrderPaidEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,15 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class CompletePaymentHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(CompletePaymentHandler.class);
-    private final OrderManager orderManager;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public CompletePaymentHandler(OrderManager orderManager) {
-        this.orderManager = orderManager;
+    CompletePaymentHandler(ApplicationEventPublisher eventPublisher) {
+        this.eventPublisher = eventPublisher;
     }
+
 
     @Transactional
     public void paymentComplete(String orderId) {
         LOGGER.debug("Payment complete {}", orderId);
-        orderManager.paymentComplete(orderId);
+        eventPublisher.publishEvent(new OrderPaidEvent(orderId));
     }
 }
