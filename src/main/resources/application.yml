@@ -9,6 +9,9 @@ spring:
   kafka:
     bootstrap-servers: "localhost:9092"
 
+  modulith:
+    republish-outstanding-events-on-restart: true
+
 management:
   endpoints:
     enabled-by-default: true
