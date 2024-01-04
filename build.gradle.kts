@@ -23,6 +23,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	implementation("org.springframework.amqp:spring-rabbit")
 
 	implementation("io.micrometer:micrometer-tracing-bridge-otel")
 
@@ -45,8 +46,7 @@ dependencies {
 //	runtimeOnly("org.springframework.modulith:spring-modulith-actuator")
 //	runtimeOnly("org.springframework.modulith:spring-modulith-observability")
 
-	// TODO STAGE_MODULITH_AMQP
-//	implementation("org.springframework.amqp:spring-rabbit")
+	// TODO STAGE_MODULITH_EXTERNAL_EVENT - Uncomment it
 //	runtimeOnly("org.springframework.modulith:spring-modulith-events-amqp")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

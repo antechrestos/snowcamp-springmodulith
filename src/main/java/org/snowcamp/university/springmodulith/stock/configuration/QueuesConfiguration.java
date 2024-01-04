@@ -2,6 +2,7 @@ package org.snowcamp.university.springmodulith.stock.configuration;
 
 import org.snowcamp.university.springmodulith.common.model.ChartreuseType;
 import org.springframework.amqp.core.*;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,6 +12,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Stream.concat;
 
 @Configuration
+@ConditionalOnClass(name = "org.springframework.modulith.events.amqp.RabbitEventExternalizerConfiguration")
 public class QueuesConfiguration {
     @Bean
     public Declarables outputQueuesDeclaration() {
