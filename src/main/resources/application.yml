@@ -4,7 +4,7 @@ spring:
 
   data:
     mongodb:
-      uri: "mongodb://chartreuse-mongo-user:chartreuse-mongo-password@localhost:27017/chartreuse-db"
+      uri: "mongodb://localhost:27017/chartreuse-db"
 
   rabbitmq:
     addresses: "localhost:5672"

@@ -1,15 +1,7 @@
 services:
   mongo:
-    image: bitnami/mongodb:5.0
-    environment:
-      # see configuration here:
-      # https://github.com/bitnami/containers/tree/main/bitnami/mongodb#setting-up-replication
-      - MONGODB_REPLICA_SET_MODE=primary
-      - MONGODB_ROOT_PASSWORD=${MONGODB_PASSWORD}
-      - MONGODB_USERNAME=${MONGODB_USERNAME}
-      - MONGODB_PASSWORD=${MONGODB_PASSWORD}
-      - MONGODB_REPLICA_SET_KEY=replicasetkey123
-      - MONGODB_DATABASE=${MONGODB_DATABASE_NAME}
+    image: mongo:7
+    command: [ --replSet, chartreuse-replicaset, --bind_ip_all ]
     ports:
       - "27017:27017"
     volumes:
@@ -17,7 +9,9 @@ services:
     networks:
       - chartreuse-shop
     healthcheck:
-      test: [ "CMD", "mongosh", "-p", "${MONGODB_PASSWORD}", "-u", "root", "--eval", "'db.getReplicationInfo()'" ]
+      test: test $$(mongosh --port 27017 --quiet --eval "try {rs.initiate({_id:'chartreuse-replicaset',members:[{_id:0,host:\"mongo:27017\"}]})} catch(e) {rs.status().ok}") -eq 1
+      interval: 10s
+      start_period: 30s
 
   rabbitmq-broker:
     image: rabbitmq:3.9.8-management
