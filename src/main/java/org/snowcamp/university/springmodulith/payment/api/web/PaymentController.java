@@ -20,6 +20,6 @@ public class PaymentController {
     @PutMapping({"/api/v1/payments/{orderId}/complete"})
     public void paymentComplete(@PathVariable("orderId") String orderId) {
         this.paymentHandler.paymentComplete(orderId);
-        this.LOGGER.debug("Payment complete for order {}", orderId);
+        LOGGER.debug("Payment complete for order {}", orderId);
     }
 }

@@ -1,7 +1,7 @@
 package org.snowcamp.university.springmodulith.order.domain;
 
 public class OrderNotFoundException extends RuntimeException {
-    private String orderId;
+    private final String orderId;
 
     public OrderNotFoundException(String orderId) {
         super("Order " + orderId + " not found");

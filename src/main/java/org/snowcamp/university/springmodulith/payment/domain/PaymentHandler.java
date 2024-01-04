@@ -16,7 +16,6 @@ public class PaymentHandler {
         this.orderManager = orderManager;
     }
 
-    @Transactional
     public void initPayment(String orderId) {
         LOGGER.info("Init payment {}", orderId);
     }
