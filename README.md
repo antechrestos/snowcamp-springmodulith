@@ -1,5 +1,11 @@
 # A la découverte de Spring Modulith
 
+## Prérequis
+
+Afin de jouer cet atelier, assurez vous d'avoir sur votre poste :
+- Java 17
+- Docker Compose
+
 ## Exercice 1
 
 Résolvez la dépendance cyclique Order <-> Payment
