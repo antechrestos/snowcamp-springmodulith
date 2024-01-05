@@ -9,9 +9,10 @@ services:
     networks:
       - chartreuse-shop
     healthcheck:
-      test: test $$(mongosh --port 27017 --quiet --eval "try {rs.initiate({_id:'chartreuse-replicaset',members:[{_id:0,host:\"mongo:27017\"}]})} catch(e) {rs.status().ok}") -eq 1
-      interval: 10s
-      start_period: 30s
+      test: >
+        echo "try { rs.status() } catch(err) { rs.initiate({ _id : 'chartreuse-replicaset' , members : [ { _id : 0 , host: 'mongo:27017' } ]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      start_period: 10s
 
   rabbitmq-broker:
     image: rabbitmq:3.9.8-management
