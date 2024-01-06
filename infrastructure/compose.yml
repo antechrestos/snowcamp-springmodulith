@@ -52,18 +52,12 @@ services:
     networks:
       - chartreuse-shop
 
-  monitoring-prometheus:
-    image: bitnami/prometheus:2.41.0
-    volumes:
-      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    networks:
-      - chartreuse-shop
-
   monitoring-otel-collector:
     image: otel/opentelemetry-collector-contrib:0.69.0
     command: [ "--config=/etc/otel-collector/config.yml" ]
     ports:
       - "4318:4318"
+      - "8889:8889"
     volumes:
       - ./config/otel-collector.yml:/etc/otel-collector/config.yml
     networks:
