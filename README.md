@@ -10,22 +10,90 @@ Afin de jouer cet atelier, assurez vous d'avoir sur votre poste :
 
 Résolvez la dépendance cyclique Order <-> Payment
 
+<details>
+  <summary>Besoin d'aide ?</summary>
+  
+  Si vous essayez de lancer l'application à l'aide de la commande `./gradlew bootRun`, vous constaterez que l'application ne démarre pas :
+  
+  ```
+  ***************************
+  APPLICATION FAILED TO START
+  ***************************
+  
+  Description:
+  
+  The dependencies of some of the beans in the application context form a cycle:
+  
+  orderController defined in file [./spring-modulith-workshop/build/classes/java/main/org/snowcamp/university/springmodulith/order/api/web/OrderController.class]
+  ┌─────┐
+  |  orderManager defined in file [./spring-modulith-workshop/build/classes/java/main/org/snowcamp/university/springmodulith/order/domain/OrderManager.class]
+  ↑     ↓
+  |  paymentHandler defined in file [./spring-modulith-workshop/build/classes/java/main/org/snowcamp/university/springmodulith/payment/domain/PaymentHandler.class]
+  └─────┘
+  
+  
+  Action:
+  
+  Relying upon circular references is discouraged and they are prohibited by default. Update your application to remove the dependency cycle between beans. As a last resort, it may be possible to break the cycle automatically by setting spring.main.allow-circular-references to true.
+  ```
+  
+  `OrderManager` et `PaymentHandler`dépendent l'un de l'autre, essayez de répartir la logique de `PaymentHandler` dans deux classes séparées pour résoudre ce problème.
+</details>
+
 ## Exercice 2
 
 Essayez d'aller jusqu'au paiement complet... Ca coince. Faites en sorte que les échecs du `GreeterService`
 ne polluent pas le traitement principal.
 
+<details>
+  <summary>Besoin d'aide ?</summary>
+
+  En utilisant le [Swagger de l'application](http://localhost:8080/swagger-ui/index.html), commencez par créer un _order_ (POST `/api/vi/order`).
+  
+  Passez ensuite cette _order_ en paiement (PUT `/api/v1/orders/static-for-demo/state/in_payment`).
+  
+  Vous pouvez finalement invoquer la complétion du paiement (PUT `/api/v1/payments/static-for-demo/complete`).
+  
+  L'API vous renvoit alors une erreur `500` et vous constatez en inspectant les logs que le problème vient du `GreeterService`
+  
+  ```
+  java.lang.RuntimeException: No greeting !!!
+  at org.snowcamp.university.springmodulith.greeting.configuration.GreetingConfiguration.lambda$noGreeterClient$1(GreetingConfiguration.java:29)
+  at org.snowcamp.university.springmodulith.greeting.domain.GreeterService.greet(GreeterService.java:25)
+  ...
+  at org.snowcamp.university.springmodulith.greeting.domain.GreeterService$$SpringCGLIB$$0.greet(<generated>)
+  at org.snowcamp.university.springmodulith.order.domain.OrderManager.paymentComplete(OrderManager.java:101)
+  ...
+  at org.snowcamp.university.springmodulith.order.domain.OrderManager$$SpringCGLIB$$0.paymentComplete(<generated>)
+  at org.snowcamp.university.springmodulith.payment.domain.PaymentHandler.paymentComplete(PaymentHandler.java:22)
+  ...
+  at org.snowcamp.university.springmodulith.payment.domain.PaymentHandler$$SpringCGLIB$$0.paymentComplete(<generated>)
+  at org.snowcamp.university.springmodulith.payment.api.web.PaymentController.paymentComplete(PaymentController.java:22)
+  ...
+  ```
+  
+  L'objectif n'est pour l'instant pas de corriger le problème levé par le `GreeterService` mais juste de faire en sorte qu'en cas d'échec, cela ne vienne pas faire échouer la complétion du paiement.
+  Une solution pourrait être de rendre le traitement du `GreeterService` [asynchrone](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html).
+
+</details>
+
 ## Exercice 3 - init modulith dans la douleur
 
 Activez les dépendances Spring Modulith (sans observabilité pour l'instant)
 
-Ajouter un `Test` dans `ChartreuseShopApplicationTest` qui fait
+Ajouter un `Test` dans [`ChartreuseShopApplicationTest`](src%2Ftest%2Fjava%2Forg%2Fsnowcamp%2Funiversity%2Fspringmodulith%2FChartreuseShopApplicationTest.java) qui fait
 
 ```java
-ApplicationModules.of(ChartreuseShopApplication.class).verify()
+ApplicationModules.of(ChartreuseShopApplication.class).verify();
 ```
 
-Pourquoi échoue-t-i?
+Pourquoi échoue-t-il?
+
+<details>
+  <summary>Besoin d'aide ?</summary>
+
+  Si vous n'êtes pas familier de Gradle, les dépendances sont dans le fichier [build.gradle.kts](build.gradle.kts).
+</details>
 
 ## Exercice 4 - module scanning
 
