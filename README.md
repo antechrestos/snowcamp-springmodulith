@@ -77,9 +77,34 @@ ne polluent pas le traitement principal.
 
 </details>
 
-## Exercice 3 - init modulith dans la douleur
+## Exercice 3 - init modulith et visualisation de la structure actuelle
 
-Activez les dépendances Spring Modulith (sans observabilité pour l'instant)
+Activez les dépendances Spring Modulith (sans observabilité pour l'instant).
+
+Spring Modulith étant désormais présent, on va pouvoir commencer à étudier la structure du projet.
+
+Faites en sorte de visualiser les modules actuellement découverts par Modulith voir même d'en générer une documentation. 
+
+<details>
+  <summary>Besoin d'aide ?</summary>
+
+  Si vous n'êtes pas familier de Gradle, les dépendances sont dans le fichier [build.gradle.kts](build.gradle.kts).
+
+  Les modules vus par Modulith sont accessibles via :
+
+  ```java
+  ApplicationModules.of(ChartreuseShopApplication.class);
+  ```
+
+  Vous pouvez simplement rendre dans la sorties standard le résultat de la commande ci-dessus.
+
+  Une autre option, est d'utiliser l'[outil](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/docs/Documenter.html) de génération de documentation mis à disposition par Modulith.
+
+  ![structure initiale](static/modularity-mess.png)
+
+</details>
+
+## Exercice 4 - alors, c'est modulaire ?
 
 Ajouter un `Test` dans [`ChartreuseShopApplicationTest`](src%2Ftest%2Fjava%2Forg%2Fsnowcamp%2Funiversity%2Fspringmodulith%2FChartreuseShopApplicationTest.java) qui fait
 
@@ -89,20 +114,15 @@ ApplicationModules.of(ChartreuseShopApplication.class).verify();
 
 Pourquoi échoue-t-il?
 
-<details>
-  <summary>Besoin d'aide ?</summary>
-
-  Si vous n'êtes pas familier de Gradle, les dépendances sont dans le fichier [build.gradle.kts](build.gradle.kts).
-</details>
-
-## Exercice 4 - module scanning
+## Exercice 5 - module scanning
 
 On rentre dans le vif du sujet...
 
-On va omettre le package `common` du scanning... Créez un `Bean` qui implémente l'interface
-`ApplicationModuleDetectionStrategy`
+On va omettre le package `common` du scanning... 
+Pour celà, créez un `Bean` qui implémente l'interface
+[`ApplicationModuleDetectionStrategy`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/core/ApplicationModuleDetectionStrategy.html).
 
-## Exercice 5 - internal events
+## Exercice 6 - internal events
 
 On va maintenant cloisonner les packages.
 
@@ -115,7 +135,7 @@ On va maintenant cloisonner les packages.
 
 À la fin de cet exercice le test de l'étape 3 doit passer au vert.
 
-## Exercice 6 - tests
+## Exercice 7 - tests
 
 Deux tests à faire: au niveau du package `order`, créez une classe de tests annotée `ApplicationModuleTest`.
 
@@ -127,13 +147,13 @@ Deux tests à faire: au niveau du package `order`, créez une classe de tests an
     * publier un event qui signale que l'order est payé
     * et observer qu'un event est sorti
 
-## Exercice 7 - reprise d'event
+## Exercice 8 - reprise d'event
 
 Pouvez vous jouer avec les `Bean` `CompletedEventPublications` et `IncompleteEventPublications`  et purger les évènements et les rejouer ?
 
 et sinon il paraît qu'il y a un paramètre pour les rejouer au démarrage (sous `spring.moo...`).
 
-## Exercice 8 - external events
+## Exercice 9 - external events
 
 Les stocks pourraient être intéressés par externaliser les events. Pour ce faire, rajouter les dépendances et publier
 un objet annoté de l'annotation. On peut même paramétrer la routing key; par exemple, dans l'exemple suivant
@@ -147,23 +167,20 @@ l'objet `new MonExample("YouPi")` sera publié sur l'exchange `example` avec la 
 Regardez la configuration `QueuesConfiguration` pour designer votre premier external event.
 
 
-## Exercice 9 - observabilité
+## Exercice 10 - observabilité
 
 Rajoutez les dépendances, jouez et regardez les traces dans grafana
 
-## Exercice 10 - documentation
+## Exercice 11 - visualiser la structure finale 
 
-Générez la documentation sous
+Vous pouvez désormais générer la documentation finale afin de constater l'évolution de la structure du projet.
 
-```kotlin
-    @Test
-    fun generateDocumentation() {
-        val modules: ApplicationModules = ApplicationModules.of(TzModulithDemoApplication::class.java)
-        val canvasOptions = CanvasOptions.defaults()
-            .revealInternals()
-        val diagramOptions = DiagramOptions.defaults()
-            .withStyle(DiagramOptions.DiagramStyle.C4)
-        Documenter(modules)
-            .writeDocumentation(diagramOptions, canvasOptions)
-    }
+```java
+@Test
+void generateDocumentation() {
+    ApplicationModules modules = ApplicationModules.of(ChartreuseShopApplication.class);
+    CanvasOptions canvasOptions = CanvasOptions.defaults().revealInternals();
+    DiagramOptions diagramOptions = DiagramOptions.defaults().withStyle(DiagramOptions.DiagramStyle.C4);
+    new Documenter(modules).writeDocumentation(diagramOptions, canvasOptions);
+}
 ``` 
