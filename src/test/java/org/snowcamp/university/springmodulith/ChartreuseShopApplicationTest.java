@@ -13,4 +13,9 @@ public class ChartreuseShopApplicationTest {
     void output_modularity(){
         LOGGER.info(ApplicationModules.of(ChartreuseShopApplication.class).toString());
     }
+
+    @Test
+    void check_modularity(){
+        ApplicationModules.of(ChartreuseShopApplication.class).verify();
+    }
 }
