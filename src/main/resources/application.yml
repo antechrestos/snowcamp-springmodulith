@@ -6,14 +6,8 @@ spring:
     mongodb:
       uri: "mongodb://localhost:27017/chartreuse-db"
 
-  rabbitmq:
-    addresses: "localhost:5672"
-    virtual-host: "chartreuse-vhost"
-    ssl:
-      enabled: false
-      algorithm: "TLSv1.3"
-    username: chartreuse-rabbit-user
-    password: chartreuse-rabbit-password
+  kafka:
+    bootstrap-servers: "localhost:9092"
 
 management:
   endpoints:

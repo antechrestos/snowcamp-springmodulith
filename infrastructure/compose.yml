@@ -14,23 +14,29 @@ services:
       interval: 5s
       start_period: 10s
 
-  rabbitmq-broker:
-    image: rabbitmq:3.9.8-management
-    #    container_name: ${RABBITMQ_HOST}
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VIRTUAL_HOST}
-    mem_reservation: 200M
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://kafka:29092,CONTROLLER://kafka:29093,EXTERNAL://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka:29092,EXTERNAL://localhost:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      CLUSTER_ID: 'ChartreuseShopSnowCamp'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
     volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-    networks:
-      - chartreuse-shop
-    healthcheck:
-      test: [ "CMD", "rabbitmq-diagnostics", "check_alarms" ]
+      - kafka-data:/var/lib/kafka/data
 
   monitoring-grafana:
     image: grafana/grafana-oss:9.3.2
@@ -65,7 +71,7 @@ services:
 
 volumes:
   mongo-data:
-  rabbitmq-data:
+  kafka-data:
 networks:
   chartreuse-shop:
 

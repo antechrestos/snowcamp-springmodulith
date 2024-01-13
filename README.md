@@ -163,9 +163,19 @@ un objet annoté de l'annotation. On peut même paramétrer la routing key; par 
 record MonExample(String name){}
 ```
 
-l'objet `new MonExample("YouPi")` sera publié sur l'exchange `example` avec la routing key `youpi`.
-Regardez la configuration `QueuesConfiguration` pour designer votre premier external event.
+l'objet `new MonExample("YouPi")` sera publié sur le topic `example`.
 
+Vous pouvez vous connecter au container kafka comme suit
+
+```shell
+docker compose exec -it kafka bash
+```
+
+et depuis l'intérieur du container suivre les messages reçus par le topic `example` grace à la commande
+
+```shell
+ /bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic example --from-beginning
+```
 
 ## Exercice 10 - observabilité
 

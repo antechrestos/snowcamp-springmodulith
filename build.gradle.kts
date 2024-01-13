@@ -47,7 +47,7 @@ dependencies {
 //	runtimeOnly("org.springframework.modulith:spring-modulith-observability")
 
 	// TODO STAGE_MODULITH_EXTERNAL_EVENT - Uncomment it
-//	runtimeOnly("org.springframework.modulith:spring-modulith-events-amqp")
+//	 runtimeOnly("org.springframework.modulith:spring-modulith-events-kafka")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
