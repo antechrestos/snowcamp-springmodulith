@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: "Workshop preparation"
+
+  data:
+    mongodb:
+      uri: "mongodb://localhost:27017/chartreuse-db"
+
+  kafka:
+    bootstrap-servers: "localhost:9092"

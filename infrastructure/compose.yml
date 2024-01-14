@@ -1,0 +1,77 @@
+services:
+  mongo:
+    image: mongo:7
+    command: [ --replSet, chartreuse-replicaset, --bind_ip_all ]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - chartreuse-shop
+    healthcheck:
+      test: >
+        echo "try { rs.status() } catch(err) { rs.initiate({ _id : 'chartreuse-replicaset' , members : [ { _id : 0 , host: 'mongo:27017' } ]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      start_period: 10s
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT'
+      KAFKA_LISTENERS: 'INTERNAL://kafka:29092,CONTROLLER://kafka:29093,EXTERNAL://0.0.0.0:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://kafka:29092,EXTERNAL://localhost:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'INTERNAL'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_JMX_PORT: 9101
+      KAFKA_JMX_HOSTNAME: localhost
+      CLUSTER_ID: 'ChartreuseShopSnowCamp'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+  monitoring-grafana:
+    image: grafana/grafana-oss:9.3.2
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/default.yaml:ro
+    networks:
+      - chartreuse-shop
+
+  monitoring-tempo:
+    image: grafana/tempo:1.5.0
+    command: --config.file=/etc/tempo/config.yml
+    volumes:
+      - ./config/tempo.yml:/etc/tempo/config.yml:ro
+    networks:
+      - chartreuse-shop
+
+  monitoring-otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.69.0
+    command: [ "--config=/etc/otel-collector/config.yml" ]
+    ports:
+      - "4318:4318"
+      - "8889:8889"
+    volumes:
+      - ./config/otel-collector.yml:/etc/otel-collector/config.yml
+    networks:
+      - chartreuse-shop
+
+volumes:
+  mongo-data:
+  kafka-data:
+networks:
+  chartreuse-shop:
+
