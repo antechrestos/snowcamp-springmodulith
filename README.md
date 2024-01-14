@@ -122,24 +122,38 @@ On va omettre le package `common` du scanning...
 Pour celà, créez un `Bean` qui implémente l'interface
 [`ApplicationModuleDetectionStrategy`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/core/ApplicationModuleDetectionStrategy.html).
 
+<details>
+  <summary>Besoin d'aide ?</summary>
+
+  Pour plus d'information sur comment configurer la détection de module, vous pouvez jeter un oeil à ce [lien](
+https://docs.spring.io/spring-modulith/reference/fundamentals.html#customizing-modules).
+</details>
+
 ## Exercice 6 - internal events
 
 On va maintenant cloisonner les packages.
 
 * créez des objets évènements applicatifs sur les order
-* servez vous de `ApplicationEventPublisher` pour les publier (bean dispo dans l'application context)
+* servez vous de [`ApplicationEventPublisher`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ApplicationEventPublisher.html) pour les publier (bean dispo dans l'application context)
 * servez vous des annotations sur des `Composants` qui appelleront des objets internes au module
-    * `EventListener` (avec éventuellement `Transactionnal`) pour créer un listener **synchrone** (qui s'insèrera éventuellement dans la transaction parente)
-    * `TransactionalEventListener` pour créer un listener qui recevra l'événement **en fin de traitement** uniquement si la transaction est réussie (possiblité de régler le moment de la phase de commit)
-    *  `ApplicationModuleListener` qui fait la même chose que le précédent, avec en plus une exécution asynchrone et une transaction dédiée
+    * [`EventListener`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/event/EventListener.html) (avec éventuellement [`Transactionnal`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/annotation/Transactional.html)) pour créer un listener **synchrone** (qui s'insèrera éventuellement dans la transaction parente)
+    * [`TransactionalEventListener`](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/transaction/event/TransactionalEventListener.html) pour créer un listener qui recevra l'événement **en fin de traitement** uniquement si la transaction est réussie (possiblité de régler le moment de la phase de commit)
+    *  [`ApplicationModuleListener`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/ApplicationModuleListener.html) qui fait la même chose que le précédent, avec en plus une exécution asynchrone et une transaction dédiée
 
 À la fin de cet exercice le test de l'étape 3 doit passer au vert.
 
+<details>
+  <summary>Besoin d'aide ?</summary>
+  L'objectif ici est de remplacer les dépendances à des beans d'autres modules en remplaçant les appels directs à des méthodes de ces beans par des envois d'évènements.  
+
+  Ce genre de dépendances est présente dans la classe `OrderManager`, les méthodes `processToPayment` et `paymentComplete` invoquent chacune un bean différents.
+</details>
+
 ## Exercice 7 - tests
 
-Deux tests à faire: au niveau du package `order`, créez une classe de tests annotée `ApplicationModuleTest`.
+Deux tests à faire: au niveau du package `order`, créez une classe de tests annotée [`ApplicationModuleTest`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/ApplicationModuleTest.html).
 
-* écrivez un premier test qui prend en paramètre `events` de type `AssertablePublishedEvents` qui doit
+* écrivez un premier test qui prend en paramètre `events` de type [`AssertablePublishedEvents`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/AssertablePublishedEvents.html) qui doit
     * initialiser un `Order` en base en `IN_PAYMENT`
     * appeler la méthode `paymentComplete` sur l'attribut de la classe de test `OrderManager` annoté `Autowired`
     * faire un `assertThat(events)...` pour vérifier qu'un évènement est bien publié avec le bon id
@@ -149,7 +163,7 @@ Deux tests à faire: au niveau du package `order`, créez une classe de tests an
 
 ## Exercice 8 - reprise d'event
 
-Pouvez vous jouer avec les `Bean` `CompletedEventPublications` et `IncompleteEventPublications`  et purger les évènements et les rejouer ?
+Pouvez vous jouer avec les `Bean` [`CompletedEventPublications`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/events/CompletedEventPublications.html) et [`IncompleteEventPublications`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/events/IncompleteEventPublications.html)  et purger les évènements et les rejouer ?
 
 et sinon il paraît qu'il y a un paramètre pour les rejouer au démarrage (sous `spring.moo...`).
 
@@ -185,12 +199,22 @@ Rajoutez les dépendances, jouez et regardez les traces dans grafana
 
 Vous pouvez désormais générer la documentation finale afin de constater l'évolution de la structure du projet.
 
+<details>
+  <summary>Besoin d'aide ?</summary>
+
+Spring Modulith propose un [`Documenter`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/docs/Documenter.htmlhttps://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/docs/Documenter.html) à cet effet.
+
+Vous pouvez simplement générer la documentation dans son format par défaut ainsi :
+
 ```java
 @Test
 void generateDocumentation() {
     ApplicationModules modules = ApplicationModules.of(ChartreuseShopApplication.class);
-    CanvasOptions canvasOptions = CanvasOptions.defaults().revealInternals();
-    DiagramOptions diagramOptions = DiagramOptions.defaults().withStyle(DiagramOptions.DiagramStyle.C4);
-    new Documenter(modules).writeDocumentation(diagramOptions, canvasOptions);
+    new Documenter(modules).writeDocumentation();
 }
-``` 
+```
+
+N'hésitez pas à jeter un oeil à [`DiagramOptions`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/docs/Documenter.DiagramOptions.html) et [`CanvasOptions`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/docs/Documenter.CanvasOptions.html) qui permettent do configurer le format de votre documentation.
+
+Par défaut, la documentation est générée [ici](build/spring-modulith-docs).
+</details>
