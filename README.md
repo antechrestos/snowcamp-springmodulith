@@ -151,15 +151,15 @@ On va maintenant cloisonner les packages.
 
 ## Exercice 7 - tests
 
-Deux tests à faire: au niveau du package `order`, créez une classe de tests annotée [`ApplicationModuleTest`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/ApplicationModuleTest.html).
+Deux tests à écrire : au niveau du package `order`, créez une classe de tests annotée [`ApplicationModuleTest`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/ApplicationModuleTest.html).
 
 * écrivez un premier test qui prend en paramètre `events` de type [`AssertablePublishedEvents`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/AssertablePublishedEvents.html) qui doit
-    * initialiser un `Order` en base en `IN_PAYMENT`
+    * initialiser un `Order` en base avec un statut en `IN_PAYMENT`
     * appeler la méthode `paymentComplete` sur l'attribut de la classe de test `OrderManager` annoté `Autowired`
     * faire un `assertThat(events)...` pour vérifier qu'un évènement est bien publié avec le bon id
-* écrivez un autre test qui prend un objet de paramètre de type `Scenario`. Le test est similaire sauf qu'au lieu d'appeler une quelconque méthode d'`OrderHandler` on doit
+* écrivez un autre test qui prend un objet de paramètre de type [`Scenario`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/class-use/Scenario.html). Le test est similaire sauf qu'au lieu d'appeler une quelconque méthode d'`OrderHandler` on doit
     * publier un event qui signale que l'order est payé
-    * et observer qu'un event est sorti
+    * et tester qu'un event a été émis
 
 ## Exercice 8 - reprise d'event
 
@@ -167,10 +167,18 @@ Pouvez vous jouer avec les `Bean` [`CompletedEventPublications`](https://docs.sp
 
 et sinon il paraît qu'il y a un paramètre pour les rejouer au démarrage (sous `spring.moo...`).
 
+<details>
+  <summary>Besoin d'aide ?</summary>
+
+  Vous devriez pouvoir trouver votre bonheur dans cette [documentation](https://docs.spring.io/spring-modulith/docs/current-SNAPSHOT/reference/html/#events.publication-registry).
+</details>
+
 ## Exercice 9 - external events
 
-Les stocks pourraient être intéressés par externaliser les events. Pour ce faire, rajouter les dépendances et publier
-un objet annoté de l'annotation. On peut même paramétrer la routing key; par exemple, dans l'exemple suivant
+Les stocks pourraient être intéressés par externaliser les events.  
+Pour ce faire, rajouter les dépendances et publier
+un objet annoté de l'annotation [`@Externalized`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/events/Externalized.html).  
+On peut même paramétrer la routing key; par exemple, dans la déclaration:
 
 ```java
 @Externalized("example::#{#this.name().toLowerCase()}") 
@@ -191,9 +199,33 @@ et depuis l'intérieur du container suivre les messages reçus par le topic `exa
  /bin/kafka-console-consumer --bootstrap-server localhost:9092 --topic example --from-beginning
 ```
 
+<details>
+  <summary>Besoin d'aide ?</summary>
+
+  L'objectif ici est de créer un nouveau module de gestion des stocks au même titre qu'il en existe déjà pour les commandes, le paiement, ...
+
+  Dans ce module `stock`, créez un nouveau listener qui écoute les évènements que vous publiez déjà depuis la méthode `OrderManager::paymentComplete`.
+
+  Il vous faudra certainement enrichir l'évènement existant pour savoir quels types de bouteilles de Chartreuse sont commandées.
+
+  Publiez alors depuis un Bean du module `stock` un évènement par type de bouteille présent dans la commande.
+
+  Chaque évènement indiquera qu'il faut décrémenter le stock de X pour un type de Chartreuse donné.  
+  
+  C'est cet évènement pour lequel la classe devra être annotée `@Externalized`. 
+  
+</details>
+
 ## Exercice 10 - observabilité
 
 Rajoutez les dépendances, jouez et regardez les traces dans grafana
+
+L'interface de Grafana est accessible à http://localhost:3000/.  
+Vous pouvez par exemple lancer une recherche depuis la section _Explore_ sur la base `Tempo`.
+
+Dans les résultats de recherche, si vous sélectionnez un Trace Id, vous pourrez voir le détail du déroulement de la requête correspondante au travers des différents modules.
+
+![illustration](static/observability.png)
 
 ## Exercice 11 - visualiser la structure finale 
 
@@ -216,5 +248,5 @@ void generateDocumentation() {
 
 N'hésitez pas à jeter un oeil à [`DiagramOptions`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/docs/Documenter.DiagramOptions.html) et [`CanvasOptions`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/docs/Documenter.CanvasOptions.html) qui permettent do configurer le format de votre documentation.
 
-Par défaut, la documentation est générée [ici](build/spring-modulith-docs).
+Par défaut, la documentation est générée sous [build/spring-modulith-docs](build/spring-modulith-docs).
 </details>
