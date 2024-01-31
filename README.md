@@ -140,7 +140,7 @@ qui fait
 ApplicationModules.of(ChartreuseShopApplication.class).verify();
 ```
 
-Pourquoi échoue-t-il? Pourriez-vous résoudre les problèmes remontés?
+Pourquoi échoue-t-il? Nous allons résoudre ces problèmes dans les deux prochains exercices.
 
 ## Exercice 5 - module scanning
 
@@ -198,7 +198,7 @@ dans laquelle vous écrirez deux tests :
     * initialiser un `Order` en base avec un statut en `IN_PAYMENT`
     * appeler la méthode `paymentComplete` sur l'attribut de la classe de test `OrderManager` annoté `Autowired`
     * faire un `assertThat(events)...` pour vérifier qu'un évènement est bien publié avec le bon id
-* écrivez un autre test qui prend un objet de paramètre de type [`Scenario`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/class-use/Scenario.html). Le test est similaire sauf qu'au lieu d'appeler une quelconque méthode d'`OrderHandler` on doit
+* écrivez un autre test qui prend un objet de paramètre de type [`Scenario`](https://docs.spring.io/spring-modulith/docs/current/api/org/springframework/modulith/test/class-use/Scenario.html). Le test est similaire sauf qu'au lieu d'appeler une quelconque méthode d'`OrderManager` on doit
     * publier un event qui signale que la commande est payée
     * tester qu'un event de commande complète a été émis avec le bon id
 
